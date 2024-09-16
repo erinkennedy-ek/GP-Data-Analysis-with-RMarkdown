@@ -1,0 +1,167 @@
+---
+title: "Interpretation of Data II"
+author: "A00275664"
+date: "2023-11-19"
+output: pdf_document
+---
+
+# RMarkdown Guide 
+
+## RMarkdown GP Applications
+
+```{r include=FALSE}
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+```
+RMarkdown can be used by a GP in a variety of ways to optimise and enhance a 
+GP's efficiency in day-to-day tasks
+Some ways that RMarkdown can be applied are;
+
+  * create reports for team-members
+  
+  * provide calculations for tax returns
+  
+  * provide an audit trail for reviews and audits
+  
+  * communicate knowledge easily with non-technical staff members
+
+### Creating Reports with RStudio
+
+RMarkdown files are clear and straightforward to read.
+For example;
+
+The average speed of a car (miles per hour) from the 1920s was
+```{r Mean example, echo=FALSE}
+data<- cars
+mean(cars$speed)
+```
+### Visualisation Features
+
+Charts and graphs can be produced from data to communicate a clearer picture of 
+company performance. RMarkdown utilises the package **'ggplot2'** for data
+visualisation.
+```{r scatter_chunk, echo=TRUE, fig.height=4}
+ggplot(ToothGrowth, aes(x=len,
+                        y=dose,
+                        color= supp))+
+  geom_point() + labs(title="Tooth Length by Dosage",
+                      x = "Dose (mg/day)",
+                      y = "Tooth Length")
+```
+
+
+This can be shown a variety of ways useful for a business, such as a *bar chart* 
+```{r bar_chunk, echo=TRUE, fig.height=3.5}
+ggplot(ToothGrowth, aes(x = dose, fill = supp)) +
+  geom_bar(position = "dodge") +
+  labs(title = "Tooth Growth by Dose and Supplement",
+       x = "Dose (mg/day)",
+       y = "Frequency")
+```
+\hfill\break
+\hfill\break
+Or a *histogram*
+```{r hist_chunk, echo=TRUE, fig.height=3.5}
+ggplot(ToothGrowth, aes(len))+
+  geom_histogram(fill="purple", colour = "black", binwidth = 1)
+```
+
+### Summary Statistics
+
+RMarkdown and Rstudio can provide a quick analysis of your data
+```{r}
+summary(airquality)
+```
+This can also be narrowed down to a single variable
+```{r}
+summary(airquality$Ozone)
+```
+
+Creating an example dataframe
+```{r}
+Patients<-data.frame(
+  Pat_Id = 1:10,
+  Age = c(18,19,20,22,30,40,50,65,70,71),
+  Weight = c(65, 70, 80, 75, 85, 90, 120, 80, 95, 100)
+  )
+```
+
+The packages **'dplyr'** can provide functions such as
+
+  * mutate()  - create new columns based on a function using variables within the dataframe
+  * select()  - select variables and create new datasets containing them
+  * filter()  - select certain rows that meet certain criteria
+  * summarise() - provides summary statistics for a dataframe or variable 
+  * arrange() - organise rows in a dataframe
+
+Using the *filter()* function to find all patients weighing above 85 kilograms from the Patients dataframe
+```{r}
+Patients1<-filter(Patients, Weight > 85)
+
+```
+The *mutate()* function can create a new variable from existing information in the dataframe
+```{r}
+#Asssume height is equal for all
+Height<-1.70
+Patients2<- Patients %>%
+  mutate(BMI = Weight / (Height*2))
+```
+RStudio allows you to return your output with the *print()* function
+```{r}
+print(Patients2)
+```
+\hfill\break
+It is also possible to load your own data into RMarkdown using *read.csv()*  and *read.excel()* functions,
+depending on the data file type
+```{r}
+data <- read.csv("C:/Users/erink/Downloads/inpatientCharges.csv")
+names(data)
+```
+Here is an example of the *summarise()* function finding the average patient discharges in the USA
+```{r}
+average_Total.Discharges <- data %>%
+                summarise(avg_Total.Discharges = mean(Total.Discharges))
+print(average_Total.Discharges)
+```
+Lastly using the **Tidyr** package, we can create tidy data using 
+
+  * gather()  - removes specified columns and adds named columns
+
+  * pivot_longer() - reshapes data from a wider format to a longer format.
+      
+  * spreading()  - lengthens the observations across multiple rows.
+      
+  * pivot_wider()  - reshapes data from a longer format to a wider format.
+      
+  * seperating() - splits columns into multiples columns.
+      
+  * uniting() - combines multiple columns into a single column.
+
+An example using *unite()* to combine the insurance provider's two address columns in the inpatientCharges dataset
+```{r}
+data1<- unite(data, "Provider_Address",
+              Provider.Street.Address, Provider.City, 
+              sep =", ")
+```
+\hfill\break
+\hfill\break
+\hfill\break
+
+
+
+# References
+
+```
+E. Green, ‘Answer to “Change R Markdown plot width”’, Stack Overflow. 
+Accessed: Nov. 17, 2023. [Online]. Available: https://stackoverflow.com/a/23755105/22916988
+
+Ssayols, ‘Answer to “Line breaks in R Markdown text (not code blocks)”’, 
+Stack Overflow. Accessed: Nov. 17, 2023. [Online]. 
+Available: https://stackoverflow.com/a/43113246/22916988
+
+‘Hospital Charges for Inpatients’. Accessed: Nov. 17, 2023. [Online]. 
+Available: https://www.kaggle.com/datasets/speedoheck/inpatient-hospital-charges
+
+file:///C:/Users/erink/Downloads/rmarkdown%20(1).pdf [R Markdown Cheat Sheet]
+```
